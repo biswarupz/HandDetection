@@ -10,17 +10,16 @@ cap = cv2.VideoCapture(0)
 cap.set(3, 1288)
 cap.set(4, 720)
 
-
-drawing_color = (0, 0,255)  
-drawing_thickness = 6.5
+drawing_color = (32, 120, 255)
+drawing_thickness = 6
 prev_x, prev_y = None, None
-
 
 canvas = np.zeros((720, 1288, 3), np.uint8)
 
 while True:
     success, img = cap.read()
-    img = cv2.resize(img, (1288, 720)) 
+    img = cv2.resize(img, (1288, 720))
+    img = cv2.flip(img, 1)  # Flip the image horizontally
     imgRGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
     results = hands.process(imgRGB)
 
@@ -30,7 +29,7 @@ while True:
                 h, w, _ = img.shape
                 cx, cy = int(lm.x * w), int(lm.y * h)
 
-                if id == 8:  
+                if id == 8:
                     if prev_x is not None and prev_y is not None:
                         cv2.line(canvas, (prev_x, prev_y), (cx, cy), drawing_color, drawing_thickness)
 
@@ -38,8 +37,7 @@ while True:
 
             mpDraw.draw_landmarks(img, handLms, mpHands.HAND_CONNECTIONS)
 
-
-    img_with_canvas = cv2.addWeighted(img, 1, canvas, 1, 0)  
+    img_with_canvas = cv2.addWeighted(img, 1, canvas, 1, 0)
 
     cv2.imshow("Image", img_with_canvas)
 
